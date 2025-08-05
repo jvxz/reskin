@@ -16,6 +16,7 @@ export default defineNuxtConfig({
     '@nuxt/fonts',
     'reka-ui/nuxt',
     '@compodium/nuxt',
+    '@nuxtjs/color-mode',
   ],
   vite: {
     plugins: [

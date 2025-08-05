@@ -1,8 +1,6 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
-@custom-variant dark (&:is(.dark *));
-
 @theme inline {
   --font-sans: var(--next-sans);
   --font-mono: var(--next-mono);
@@ -108,7 +106,7 @@
   --sidebar: 5.5rem;
 }
 
-.dark {
+.dark-mode {
   --background: hsl(0 0% 0%);
   --foreground: hsl(223.8136 -172.5242% 98%);
   --card: hsl(223.8136 0% 3.5452%);
