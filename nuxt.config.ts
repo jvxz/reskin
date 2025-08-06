@@ -19,6 +19,7 @@ export default defineNuxtConfig({
     'reka-ui/nuxt',
     '@compodium/nuxt',
     '@nuxtjs/color-mode',
+    'vue-sonner/nuxt',
   ],
   vite: {
     plugins: [
