@@ -1,5 +1,5 @@
-import { env } from 'node:process'
 import tailwindcss from '@tailwindcss/vite'
+import './env'
 
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
@@ -20,15 +20,6 @@ export default defineNuxtConfig({
     '@compodium/nuxt',
     '@nuxtjs/color-mode',
   ],
-  runtimeConfig: {
-    BETTER_AUTH_SECRET: env.NUXT_BETTER_AUTH_SECRET,
-    DATABASE_URL: env.NUXT_DATABASE_URL,
-    GITHUB_CLIENT_SECRET: env.NUXT_GITHUB_CLIENT_SECRET,
-    public: {
-      baseURL: env.NUXT_PUBLIC_BETTER_AUTH_URL,
-      githubClientId: env.NUXT_PUBLIC_GITHUB_CLIENT_ID,
-    },
-  },
   vite: {
     plugins: [
       tailwindcss(),
