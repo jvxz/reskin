@@ -13,6 +13,7 @@ export default defineNuxtConfig({
       standalone: false,
     },
   },
+
   modules: [
     '@nuxt/eslint',
     '@nuxt/fonts',
@@ -20,6 +21,12 @@ export default defineNuxtConfig({
     '@compodium/nuxt',
     '@nuxtjs/color-mode',
     'vue-sonner/nuxt',
+    '@uploadthing/nuxt',
+    '@pinia/nuxt',
+    '@pinia/colada-nuxt',
+    '@nuxt/image',
+    'vue-sonner/nuxt',
+    '@vueuse/nuxt',
   ],
   vite: {
     plugins: [
