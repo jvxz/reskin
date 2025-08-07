@@ -64,3 +64,22 @@ export const verification = pgTable('verification', {
   ),
   value: text('value').notNull(),
 })
+
+export const skins = pgTable('skins', {
+  base64: text('base64').notNull(),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  headBase64: text('head_base64').notNull(),
+  id: text('id').primaryKey().notNull(),
+  name: text('name').notNull(),
+  originalName: text('original_name'),
+  skinType: text('skin_type').notNull().$type<'SLIM' | 'CLASSIC'>(),
+  skinUrl: text('skin_url').notNull(),
+  source: text('source')
+    .notNull()
+    .$type<'USERNAME' | 'UUID' | 'URL' | 'NAME_MC' | 'FILE_UPLOAD'>(),
+  thumbnailUrl: text('thumbnail_url').notNull(),
+  userId: text('user_id')
+    .notNull()
+    .references(() => user.id, { onDelete: 'cascade' }),
+  uuid: text('uuid'),
+})
