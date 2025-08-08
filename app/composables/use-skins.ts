@@ -1,16 +1,20 @@
+import type { H3Error } from 'h3'
+
 const SKINS_QUERY_KEY = 'user-skins'
 const LOCAL_SKINS_KEY = 'user-skins'
 const ADD_SKIN_KEY = 'add-skin'
 
 export function useSkins() {
   const qc = useQueryCache()
-  const isAuthenticated = computed(() => !!authClient.useSession().value.data?.user)
-
   const localSkins = useLocalStorage<LocalSkin[]>(LOCAL_SKINS_KEY, [])
 
+  const ready = computed(() => !authClient.useSession().value.isPending)
+  const isAuthenticated = computed(() => !!authClient.useSession().value.data?.user)
+
   const { data: skins, isLoading: isLoadingSkins, refetch: refetchSkins } = useQuery({
+    enabled: ready,
     key: [SKINS_QUERY_KEY],
-    query: async () => {
+    query: async (): Promise<LocalSkin[] | UserSkin[]> => {
       if (!isAuthenticated.value) {
         return localSkins.value
       }
@@ -27,7 +31,7 @@ export function useSkins() {
       url?: string
       nameMcUrl?: string
       imageUrl?: string
-      imageFile?: File
+      imageFileBase64?: string
     }) => {
       const skinData = await $fetch('/api/minecraft/get-skin-data', {
         body: props,
@@ -65,6 +69,6 @@ export function useSkins() {
   }
 }
 
-function onError(error: Error) {
-  useNuxtApp().$toast.error(error.message)
+function onError(error: H3Error) {
+  useNuxtApp().$toast.error(error.statusMessage ?? 'An unknown error occurred')
 }
