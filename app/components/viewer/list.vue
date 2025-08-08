@@ -3,12 +3,14 @@ const { skins } = useSkins()
 </script>
 
 <template>
-  <div class="m-3 w-1/4 space-y-3">
+  <div class="m-2 w-1/4 space-y-4">
     <ViewerListHeader />
-    <ViewerListCard
-      v-for="skin in skins"
-      :key="skin.id"
-      :skin="skin"
-    />
+    <div class="space-y-2">
+      <ViewerListCard
+        v-for="skin in skins"
+        :key="skin.id"
+        :skin="skin"
+      />
+    </div>
   </div>
 </template>
