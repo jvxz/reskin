@@ -5,13 +5,15 @@ interface ButtonProps {
   asChild?: boolean
   disabled?: boolean
   size?: 'default' | 'icon' | 'lg' | 'sm'
-  variant?: 'default' | 'destructive' | 'ghost' | 'link' | 'outline'
+  variant?: 'default' | 'destructive' | 'ghost' | 'link' | 'outline' | 'soft'
+  class?: string
 }
 
-withDefaults(
+const props = withDefaults(
   defineProps<ButtonProps>(),
   {
     asChild: false,
+    class: '',
     disabled: false,
     size: 'default',
     variant: 'default',
@@ -23,14 +25,14 @@ withDefaults(
   <Slot
     v-if="asChild"
     :disabled="disabled"
-    :class="buttonVariants({ variant, size })"
+    :class="buttonVariants({ variant, size, class: props.class })"
   >
     <slot />
   </Slot>
   <button
     v-else
     :disabled="disabled"
-    :class="buttonVariants({ variant, size })"
+    :class="buttonVariants({ variant, size, class: props.class })"
   >
     <slot />
   </button>
