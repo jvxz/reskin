@@ -29,6 +29,7 @@ export default defineNuxtConfig({
     '@nuxt/image',
     'vue-sonner/nuxt',
     '@vueuse/nuxt',
+    '@nuxt/icon',
   ],
   vite: {
     plugins: [
