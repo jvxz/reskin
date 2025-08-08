@@ -16,6 +16,7 @@ export const buttonVariants = cva(
       },
       variant: {
         default: interactiveStyles.variant.default,
+        soft: interactiveStyles.variant.soft,
         destructive: interactiveStyles.variant.destructive,
         ghost: interactiveStyles.variant.ghost,
         link: interactiveStyles.variant.link,

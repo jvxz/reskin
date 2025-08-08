@@ -15,6 +15,7 @@ const interactiveStyles = {
     link: 'text-primary underline-offset-4 hover:underline',
     outline:
       'border-border/90 hover:bg-muted/90 active:bg-muted/80 hover:border-border active:border-border border bg-transparent',
+    soft: 'border-border/90 text-muted-foreground hover:text-foreground hover:bg-muted/90 active:bg-muted/80 hover:border-border active:border-border border shadow-[0px_-1px_0px_0px_hsl(from_var(--muted-foreground)_h_s_l/0.40),0px_1px_0px_0px_hsl(from_var(--muted)_h_s_l))] border-y-0 bg-card',
   },
 }
 
