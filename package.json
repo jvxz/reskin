@@ -14,10 +14,12 @@
     "@compodium/nuxt": "0.1.0-beta.11",
     "@nuxt/eslint": "1.7.1",
     "@nuxt/fonts": "0.11.4",
+    "@nuxt/icon": "1.15.0",
     "@nuxt/image": "1.11.0",
     "@nuxt/kit": ">=3.15",
     "@nuxtjs/color-mode": "^3.5.2",
     "@pinia/colada": "^0.17.1",
+    "@pinia/colada-devtools": "^0.1.5",
     "@pinia/colada-nuxt": "0.2.1",
     "@pinia/nuxt": "0.11.2",
     "@t3-oss/env-nuxt": "^0.13.8",
@@ -51,6 +53,7 @@
     "zod": "^4.0.15"
   },
   "devDependencies": {
+    "@iconify-json/tabler": "^1.2.20",
     "eslint-plugin-better-tailwindcss": "^3.7.4",
     "eslint-plugin-format": "^1.0.1",
     "tsx": "^4.20.3",
