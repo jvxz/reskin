@@ -3,7 +3,7 @@ type Theme = 'light' | 'dark' | 'system'
 </script>
 
 <template>
-  <div>
+  <div class="h-screen">
     <slot />
     <Toaster
       :toast-options="{
