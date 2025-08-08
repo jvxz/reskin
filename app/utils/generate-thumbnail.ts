@@ -12,11 +12,13 @@ export async function generateThumbnail(
   const canvas = document.createElement('canvas')
   document.body.appendChild(canvas)
 
+  canvas.style.display = 'none'
+
   canvas.width = WIDTH
   canvas.height = HEIGHT
 
   const viewer = new SkinViewer({
-    animation: new WalkAnimation(),
+    animation: new WalkAnimation(false),
     canvas,
     height: HEIGHT,
     width: WIDTH,
