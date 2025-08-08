@@ -39,10 +39,8 @@ export default defineEventHandler(async (event): Promise<LocalSkin> => {
       uuid = (await getUuidFromUsername(body.username)).id
     }
 
-    let username = body.username
-    if (!username && body.uuid) {
-      username = (await getUsernameFromUuid(body.uuid)).name
-    }
+    const { name: originalName } = await getUsernameFromUuid(uuid!)
+    const username = body.username ?? originalName
 
     const { base64, headBase64, skinType } = await getSkinDataFromUuid(uuid!)
 
@@ -50,7 +48,7 @@ export default defineEventHandler(async (event): Promise<LocalSkin> => {
       base64,
       headBase64,
       name: username!,
-      originalName: username!,
+      originalName,
       skinType,
       source: 'UUID',
       uuid: uuid!,
