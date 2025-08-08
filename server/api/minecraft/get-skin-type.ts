@@ -17,7 +17,10 @@ export default defineEventHandler(async (event): Promise<'SLIM' | 'CLASSIC'> => 
   })
 
   if (info.width / info.height !== 1 && info.width / info.height !== 2) {
-    throw new Error('Invalid skin: must be 1:1 or 1:2')
+    throw createError({
+      statusCode: 422,
+      statusMessage: 'Invalid skin: must be 1:1 or 1:2',
+    })
   }
 
   const rate = info.width / 64
