@@ -23,7 +23,7 @@ const staticStyles = {
   base: 'rounded p-5',
   variant: {
     default:
-      'bg-card shadow-[0px_-1px_0px_0px_hsl(from_var(--muted-foreground)_h_s_l/0.40),0px_1px_0px_0px_hsl(from_var(--muted)_h_s_l),inset_0px_-2px_0px_0px_hsl(from_var(--muted-foreground)_h_s_l/0.035)] border border-y-0 text-card-foreground',
+      'bg-card shadow-[0px_-1px_0px_0px_hsl(from_var(--muted-foreground)_h_s_l/0.40),0px_1px_0px_0px_hsl(from_var(--muted)_h_s_l),0_8px_16px_hsl(from_var(--background)_h_s_l/0.35)] border border-y-0 text-card-foreground',
     destructive:
       'bg-card border-destructive text-destructive border [&>svg]:text-current',
   },
@@ -39,7 +39,7 @@ const popoverStyles = {
     interactiveStyles.base,
     interactiveStyles.variant.ghost,
     interactiveStyles.size.default,
-    'focus:bg-muted focus:text-accent-foreground [&_svg:not([class*=\'text-\'])]:text-muted-foreground [&_svg:not([class*=\'size-\'])]:size-4 data-[variant=destructive]:text-destructive-foreground data-[variant=destructive]:focus:bg-destructive/10 data-[variant=destructive]:focus:text-destructive-foreground data-[variant=destructive]:*:[svg]:!text-destructive-foreground dark:data-[variant=destructive]:focus:bg-destructive/40 relative flex cursor-default items-center p-1 px-2 text-sm outline-hidden transition-all select-none focus-visible:ring-0 data-[disabled]:pointer-events-none data-[disabled]:opacity-50 data-[inset]:pl-8 [&_svg]:pointer-events-none [&_svg]:shrink-0',
+    'focus:bg-muted focus:text-accent-foreground [&_svg:not([class*=\'text-\'])]:text-muted-foreground [&_svg:not([class*=\'size-\'])]:size-12 data-[variant=destructive]:text-destructive-foreground data-[variant=destructive]:focus:bg-destructive/10 data-[variant=destructive]:focus:text-destructive-foreground data-[variant=destructive]:*:[svg]:!text-destructive-foreground dark:data-[variant=destructive]:focus:bg-destructive/40 relative flex cursor-default items-center p-1 px-2 text-sm outline-hidden transition-all select-none focus-visible:ring-0 data-[disabled]:pointer-events-none data-[disabled]:opacity-50 data-[inset]:pl-8 [&_svg]:pointer-events-none [&_svg]:shrink-0',
   ],
 }
 
