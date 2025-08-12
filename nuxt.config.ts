@@ -16,6 +16,12 @@ export default defineNuxtConfig({
     },
   },
 
+  imports: {
+    dirs: [
+      '~/server/utils',
+    ],
+  },
+
   modules: [
     '@nuxt/eslint',
     '@nuxt/fonts',

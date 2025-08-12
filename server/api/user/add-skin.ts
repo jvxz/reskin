@@ -1,7 +1,5 @@
 import z from 'zod'
 import { skins } from '~~/server/db/schema'
-import { defineAuthedEventHandler } from '~~/server/handlers/auth'
-import { getFileFromB64 } from '~~/server/utils/get-file-from-base64'
 
 export default defineAuthedEventHandler(async (event) => {
   const { thumbnailBase64, ...skinData } = await readValidatedBody(event, LocalSkinSchema.extend({
