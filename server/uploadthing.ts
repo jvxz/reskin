@@ -1,6 +1,5 @@
 import type { FileRouter } from 'uploadthing/h3'
 import { createUploadthing } from 'uploadthing/h3'
-import { auth } from './auth'
 
 const f = createUploadthing()
 
@@ -12,17 +11,18 @@ export const uploadRouter = {
     },
   })
     .middleware(async ({ event }) => {
-      const authData = await auth.api.getSession(event)
+      const authData = event.context.authData
 
-      if (!authData) {
+      const userId = authData?.user.id
+
+      if (!userId) {
         throw createError({
           statusCode: 401,
           statusMessage: 'Unauthorized',
         })
       }
 
-      // Whatever is returned here is accessible in onUploadComplete as `metadata`
-      return { userId: authData.user.id }
+      return { userId }
     })
     .onUploadComplete(async () => {}),
 } satisfies FileRouter
