@@ -6,7 +6,7 @@ const ADD_SKIN_KEY = 'add-skin'
 
 export function useSkins() {
   const qc = useQueryCache()
-  const localSkins = useLocalStorage<LocalSkin[]>(LOCAL_SKINS_KEY, [])
+  const localSkins = useLocalStorage<UserSkin[]>(LOCAL_SKINS_KEY, [])
 
   const ready = computed(() => !authClient.useSession().value.isPending)
   const isAuthenticated = computed(() => !!authClient.useSession().value.data?.user)
@@ -14,7 +14,7 @@ export function useSkins() {
   const { data: skins, isLoading: isLoadingSkins, refetch: refetchSkins } = useQuery({
     enabled: ready,
     key: [SKINS_QUERY_KEY],
-    query: async (): Promise<LocalSkin[] | UserSkin[]> => {
+    query: async (): Promise<UserSkin[]> => {
       if (!isAuthenticated.value) {
         return localSkins.value
       }
@@ -33,17 +33,18 @@ export function useSkins() {
       imageUrl?: string
       imageFileBase64?: string
     }) => {
+      triggerPendingSkin()
+
       const skinData = await $fetch('/api/minecraft/get-skin-data', {
         body: props,
         method: 'POST',
       })
 
       if (!isAuthenticated.value) {
-        return localSkins.value.push(skinData)
+        return localSkins.value.push(convertToUserSkin(skinData))
       }
 
-      const cachedSkins = qc.getQueryData<UserSkin[]>([SKINS_QUERY_KEY])
-      qc.setQueryData([SKINS_QUERY_KEY], [...(cachedSkins ?? []), skinData])
+      addOptimisticSkin(convertToUserSkin(skinData))
 
       const thumbnailBase64 = await generateThumbnail(skinData)
 
@@ -58,8 +59,57 @@ export function useSkins() {
       return res
     },
     onError,
-    onSettled: () => refetchSkins(),
+    onSettled: () => {
+      removePendingSkin()
+      refetchSkins()
+    },
   })
+
+  function getCachedSkins() {
+    return qc.getQueryData<UserSkin[]>([SKINS_QUERY_KEY])
+  }
+
+  function addOptimisticSkin(skin: UserSkin) {
+    const cachedSkins = getCachedSkins()
+    qc.setQueryData([SKINS_QUERY_KEY], [...(cachedSkins ?? []), skin])
+  }
+
+  function triggerPendingSkin() {
+    if (!isAuthenticated.value) {
+      return localSkins.value.push({
+        base64: '',
+        headBase64: '',
+        id: 'pending',
+        name: 'Pending',
+        skinType: 'CLASSIC',
+        skinUrl: '',
+        source: 'FILE_UPLOAD',
+        thumbnailUrl: '',
+        userId: '',
+      })
+    }
+
+    return addOptimisticSkin({
+      base64: '',
+      headBase64: '',
+      id: crypto.randomUUID(),
+      name: 'Pending',
+      skinType: 'CLASSIC',
+      skinUrl: '',
+      source: 'FILE_UPLOAD',
+      thumbnailUrl: '',
+      userId: '',
+    })
+  }
+
+  function removePendingSkin() {
+    if (!isAuthenticated.value) {
+      return localSkins.value = localSkins.value.filter(skin => skin.id !== 'pending')
+    }
+
+    const cachedSkins = getCachedSkins()
+    qc.setQueryData([SKINS_QUERY_KEY], cachedSkins?.filter(skin => skin.id !== 'pending'))
+  }
 
   return {
     addSkin,
