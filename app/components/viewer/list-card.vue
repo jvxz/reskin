@@ -1,11 +1,10 @@
 <script lang="ts" setup>
 defineProps<{
-  skin: UserSkin | LocalSkin
+  skin: UserSkin
 }>()
 
 const { copy } = useClipboard()
 const { currentSkin } = useCurrentSkin()
-const { deleteSkin } = useSkins()
 </script>
 
 <template>
@@ -37,7 +36,7 @@ const { deleteSkin } = useSkins()
         <Icon name="tabler:box-model" />
         Apply
       </UContextMenuItem>
-      <UContextMenuItem @click="deleteSkin(skin.id)">
+      <UContextMenuItem>
         <Icon name="tabler:trash" />
         Delete
       </UContextMenuItem>
