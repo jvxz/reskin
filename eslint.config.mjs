@@ -10,6 +10,8 @@ export default withNuxt(antfu({
   rules: {
     ...eslintPluginBetterTailwindcss.configs['recommended-warn'].rules,
     'better-tailwindcss/enforce-consistent-line-wrapping': 'off',
+    'node/prefer-global/buffer': 'off',
+    'node/prefer-global/process': 'off',
     'perfectionist/sort-objects': 'warn',
     'vue/max-attributes-per-line': ['warn', {
       multiline: {
