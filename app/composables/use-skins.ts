@@ -1,12 +1,15 @@
 import type { H3Error } from 'h3'
+import pLimit from 'p-limit'
+
+const limit = pLimit(4)
 
 const SKINS_QUERY_KEY = 'user-skins'
-const LOCAL_SKINS_KEY = 'user-skins'
 const ADD_SKIN_KEY = 'add-skin'
+const MIGRATE_SKINS_KEY = 'migrate-skins'
 
 export function useSkins() {
   const qc = useQueryCache()
-  const localSkins = useLocalStorage<UserSkin[]>(LOCAL_SKINS_KEY, [])
+  const { clearLocalSkins, localSkins } = useLocalSkins()
 
   const ready = computed(() => !authClient.useSession().value.isPending)
   const isAuthenticated = computed(() => !!authClient.useSession().value.data?.user)
@@ -65,6 +68,37 @@ export function useSkins() {
     },
   })
 
+  const { isLoading: isMigratingSkins, mutate: migrateLocalSkins } = useMutation({
+    key: [MIGRATE_SKINS_KEY],
+    mutation: async () => {
+      const procedures = localSkins.value.map(async (skin): Promise<LocalSkin & { thumbnailBase64: string }> => limit(async () => {
+        const thumbnailBase64 = await generateThumbnail(skin, {
+          returnType: 'base64',
+        })
+
+        return {
+          ...skin,
+          thumbnailBase64,
+        }
+      }))
+
+      const userSkins = await Promise.all(procedures)
+
+      await $fetch('/api/user/migrate-skins', {
+        body: userSkins,
+        method: 'POST',
+      })
+
+      return userSkins
+    },
+    onError,
+    onSettled: () => refetchSkins(),
+    onSuccess: () => {
+      clearLocalSkins()
+      useNuxtApp().$toast.success('Your skins were successfully migrated to your account')
+    },
+  })
+
   function getCachedSkins() {
     return qc.getQueryData<UserSkin[]>([SKINS_QUERY_KEY])
   }
@@ -115,6 +149,8 @@ export function useSkins() {
     addSkin,
     isAddingSkin,
     isLoadingSkins,
+    isMigratingSkins,
+    migrateLocalSkins,
     skins,
   }
 }

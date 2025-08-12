@@ -6,6 +6,8 @@ definePageMeta({
 
 <template>
   <div class="flex size-full">
+    <DialogMigrateSkins />
+
     <ViewerList />
     <ViewerDisplay />
   </div>
