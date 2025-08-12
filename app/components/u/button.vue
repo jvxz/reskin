@@ -7,6 +7,7 @@ interface ButtonProps {
   size?: 'default' | 'icon' | 'lg' | 'sm'
   variant?: 'default' | 'destructive' | 'ghost' | 'link' | 'outline' | 'soft'
   class?: string
+  isLoading?: boolean
 }
 
 const props = withDefaults(
@@ -15,6 +16,7 @@ const props = withDefaults(
     asChild: false,
     class: '',
     disabled: false,
+    isLoading: false,
     size: 'default',
     variant: 'default',
   },
@@ -24,16 +26,21 @@ const props = withDefaults(
 <template>
   <Slot
     v-if="asChild"
-    :disabled="disabled"
-    :class="buttonVariants({ variant, size, class: props.class })"
+    :disabled="disabled || isLoading"
+    :class="buttonVariants({ variant, size, class: [props.class, isLoading && 'grid text-transparent [grid-template-areas:stack]', disabled && 'pointer-events-none'] })"
   >
     <slot />
   </Slot>
   <button
     v-else
-    :disabled="disabled"
-    :class="buttonVariants({ variant, size, class: props.class })"
+    :disabled="disabled || isLoading"
+    :class="buttonVariants({ variant, size, class: [props.class, isLoading && 'grid text-transparent [grid-template-areas:stack]', disabled && 'pointer-events-none'] })"
   >
+    <USpinner
+      v-if="isLoading"
+      :invert="true"
+      class="absolute inset-0 top-1/2 left-1/2 !size-6 -translate-x-1/2 -translate-y-1/2"
+    />
     <slot />
   </button>
 </template>

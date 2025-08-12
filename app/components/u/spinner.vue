@@ -1,5 +1,9 @@
 <script setup lang="ts">
 defineOptions({ name: 'Spinner' })
+
+defineProps<{
+  invert?: boolean
+}>()
 </script>
 
 <template>
@@ -7,6 +11,7 @@ defineOptions({ name: 'Spinner' })
     viewBox="0 0 100 100"
     xmlns="http://www.w3.org/2000/svg"
     v-bind="$attrs"
+    :style="invert ? { '--spinner-stroke': 'var(--primary-foreground)' } : { '--spinner-stroke': 'var(--muted-foreground)' }"
   >
     <path
       class="spinner-line"
@@ -106,7 +111,7 @@ defineOptions({ name: 'Spinner' })
 
 .spinner-line {
   animation: spinner-fade 1.2s linear infinite;
-  stroke: var(--muted-foreground);
+  stroke: var(--spinner-stroke);
   stroke-linecap: round;
 }
 </style>
