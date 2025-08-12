@@ -6,11 +6,24 @@ import { loadViewerSettings } from './load-canvas-settings'
 const WIDTH = 89.6 * 6
 const HEIGHT = 160 * 6
 
-export async function generateThumbnail(
+export function generateThumbnail(
+  skin: LocalSkin
+): Promise<string>
+
+export function generateThumbnail(
   skin: LocalSkin,
-) {
+  options?: { returnType?: 'base64' }
+): Promise<string>
+
+export function generateThumbnail(
+  skin: LocalSkin,
+  options: { returnType: 'arraybuffer' }
+): Promise<ArrayBuffer>
+
+export async function generateThumbnail(skin: LocalSkin, { returnType = 'base64' }: { returnType?: 'base64' | 'arraybuffer' } = {}) {
   const canvas = document.createElement('canvas')
   document.body.appendChild(canvas)
+  canvas.id = 'thumbnail-canvas'
 
   canvas.style.display = 'none'
 
@@ -43,8 +56,18 @@ export async function generateThumbnail(
     })
   })
 
-  const buffer = await blob.arrayBuffer()
-  const base64 = Buffer.from(buffer).toString('base64')
+  if (returnType === 'arraybuffer') {
+    return cleanup(async () => await blob.arrayBuffer())
+  }
 
-  return base64
+  return cleanup(async () => Buffer.from(await blob.arrayBuffer()).toString('base64'))
+}
+
+function cleanup<T>(callback: () => Promise<T>) {
+  const canvas = document.querySelector('#thumbnail-canvas')
+  if (canvas) {
+    canvas.remove()
+  }
+
+  return callback()
 }
