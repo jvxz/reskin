@@ -19,7 +19,7 @@ const isPending = computed(() => currentPendingSkin.value === props.skin.id)
         :class="cn(
           buttonVariants({ variant: 'soft' }),
           staticStyles.variant.default,
-          'flex h-18 animate-in flex-row items-center justify-start gap-4 p-4 transition duration-150 fade-in-0 zoom-in-95',
+          'flex h-18 animate-in flex-row items-center justify-start gap-4 p-4 transition duration-150 fade-in-0 zoom-in-95 first:mt-px mt-3',
         )"
         @click="currentSkin = skin"
       >
