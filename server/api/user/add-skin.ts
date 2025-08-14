@@ -20,7 +20,7 @@ export default defineAuthedEventHandler(async (event) => {
     })
   }
 
-  const skin = {
+  const skin: UserSkin = {
     ...skinData,
     skinUrl: skinUrl.data?.ufsUrl,
     thumbnailUrl: thumbnailUrl.data?.ufsUrl,
