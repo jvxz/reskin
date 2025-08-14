@@ -1,5 +1,9 @@
 <script lang="ts" setup>
-const { skins } = useSkins()
+const { getSkins } = useSkins()
+const { data: session } = await authClient.useSession(useFetch)
+
+const skins = await getSkins(!!session.value?.user)
+// const { sorted } = useSorted(skins.value ?? [], (a, b) => a.)
 </script>
 
 <template>

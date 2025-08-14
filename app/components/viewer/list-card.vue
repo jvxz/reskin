@@ -1,10 +1,15 @@
 <script lang="ts" setup>
-defineProps<{
+const props = defineProps<{
   skin: UserSkin
 }>()
 
+const { isAuthed } = await useAuth()
 const { copy } = useClipboard()
 const { currentSkin } = useCurrentSkin()
+const { deleteSkin } = useSkins()
+const currentPendingSkin = useCurrentlyPending()
+
+const isPending = computed(() => currentPendingSkin.value === props.skin.id)
 </script>
 
 <template>
@@ -32,11 +37,11 @@ const { currentSkin } = useCurrentSkin()
       </UCard>
     </UContextMenuTrigger>
     <UContextMenuContent>
-      <UContextMenuItem>
+      <UContextMenuItem :disabled="isPending" @click="currentSkin = skin">
         <Icon name="tabler:box-model" />
         Apply
       </UContextMenuItem>
-      <UContextMenuItem>
+      <UContextMenuItem :disabled="isPending" @click="deleteSkin({ isAuthed, skin })">
         <Icon name="tabler:trash" />
         Delete
       </UContextMenuItem>
@@ -47,7 +52,11 @@ const { currentSkin } = useCurrentSkin()
         </NuxtLink>
       </UContextMenuItem>
       <UContextMenuSeparator />
-      <UContextMenuItem v-if="skin.skinUrl" @click="copy(skin.skinUrl)">
+      <UContextMenuItem
+        v-if="skin.skinUrl"
+        :disabled="isPending"
+        @click="copy(skin.skinUrl)"
+      >
         <Icon name="tabler:link" />
         Copy URL
       </UContextMenuItem>

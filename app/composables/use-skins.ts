@@ -1,75 +1,97 @@
-import type { H3Error } from 'h3'
 import pLimit from 'p-limit'
 
 const limit = pLimit(4)
 
-const SKINS_QUERY_KEY = 'user-skins'
-const ADD_SKIN_KEY = 'add-skin'
-const MIGRATE_SKINS_KEY = 'migrate-skins'
+// _ = private
 
 export function useSkins() {
-  const qc = useQueryCache()
+  const { $get } = useNuxtApp()
+  const _skins = useNuxtData<UserSkin[]>('skins')
   const { clearLocalSkins, localSkins } = useLocalSkins()
+  const { currentSkin } = useCurrentSkin()
+  const currentPendingSkin = useCurrentlyPending()
 
-  const ready = computed(() => !authClient.useSession().value.isPending)
-  const isAuthenticated = computed(() => !!authClient.useSession().value.data?.user)
-
-  const { data: skins, isLoading: isLoadingSkins, refetch: refetchSkins } = useQuery({
-    enabled: ready,
-    key: [SKINS_QUERY_KEY],
-    query: async (): Promise<UserSkin[]> => {
-      if (!isAuthenticated.value) {
-        return localSkins.value
-      }
-
-      return $fetch('/api/user/get-skins')
-    },
+  const { execute: _fetchSkins, refresh: _refreshSkinsRaw } = useFetch('/api/user/get-skins', {
+    dedupe: 'defer',
+    immediate: false,
+    key: 'skins',
+    lazy: true,
   })
 
-  const { isLoading: isAddingSkin, mutate: addSkin } = useMutation({
-    key: [ADD_SKIN_KEY],
-    mutation: async (props: {
-      username?: string
-      uuid?: string
-      url?: string
-      nameMcUrl?: string
-      imageUrl?: string
-      imageFileBase64?: string
-    }) => {
-      triggerPendingSkin()
+  const _refreshSkins = useDebounceFn(_refreshSkinsRaw, 3000)
 
-      const skinData = await $fetch('/api/minecraft/get-skin-data', {
-        body: props,
+  async function getSkins(isAuthed: boolean) {
+    if (!isAuthed) {
+      return localSkins
+    }
+
+    await _fetchSkins()
+    return _skins.data
+  }
+
+  const { isLoading: isAddingSkin, mutate: addSkin } = useMutation({
+    mutation: async (opts: {
+      isAuthed: boolean
+      input: {
+        username?: string
+        uuid?: string
+        url?: string
+        nameMcUrl?: string
+        imageUrl?: string
+        imageFileBase64?: string
+      }
+    }) => {
+      const skinData = await $get('/api/minecraft/get-skin-data', {
+        body: opts.input,
         method: 'POST',
       })
 
-      if (!isAuthenticated.value) {
-        return localSkins.value.push(convertToUserSkin(skinData))
+      const pendingSkin = convertToUserSkin(skinData)
+      currentSkin.value = pendingSkin
+
+      if (!opts.isAuthed) {
+        return localSkins.value.push(pendingSkin)
       }
 
-      addOptimisticSkin(convertToUserSkin(skinData))
+      _addOptimisticSkin(pendingSkin)
+      currentPendingSkin.value = pendingSkin.id
 
       const thumbnailBase64 = await generateThumbnail(skinData)
 
-      const res = await $fetch('/api/user/add-skin', {
+      await $get('/api/user/add-skin', {
         body: {
           ...skinData,
           thumbnailBase64,
         },
         method: 'POST',
+        onResponse: () => {
+          _refreshSkins()
+          currentPendingSkin.value = null
+        },
       })
-
-      return res
-    },
-    onError,
-    onSettled: () => {
-      removePendingSkin()
-      refetchSkins()
     },
   })
 
+  async function deleteSkin(opts: {
+    isAuthed: boolean
+    skin: UserSkin
+  }) {
+    if (!opts.isAuthed) {
+      return localSkins.value = localSkins.value.filter(skin => skin.uuid !== opts.skin.uuid)
+    }
+
+    _skins.data.value = _skins.data.value?.filter(skin => skin.id !== opts.skin.id)
+
+    await $get('/api/user/delete-skin', {
+      body: {
+        id: opts.skin.id,
+      },
+      method: 'POST',
+      onResponse: () => _refreshSkins(),
+    })
+  }
+
   const { isLoading: isMigratingSkins, mutate: migrateLocalSkins } = useMutation({
-    key: [MIGRATE_SKINS_KEY],
     mutation: async () => {
       const procedures = localSkins.value.map(async (skin): Promise<LocalSkin & { thumbnailBase64: string }> => limit(async () => {
         const thumbnailBase64 = await generateThumbnail(skin, {
@@ -84,77 +106,34 @@ export function useSkins() {
 
       const userSkins = await Promise.all(procedures)
 
-      await $fetch('/api/user/migrate-skins', {
+      await $get('/api/user/migrate-skins', {
         body: userSkins,
         method: 'POST',
       })
 
       return userSkins
     },
-    onError,
-    onSettled: () => refetchSkins(),
+    onSettled: () => _refreshSkins(),
     onSuccess: () => {
       clearLocalSkins()
       useNuxtApp().$toast.success('Your skins were successfully migrated to your account')
     },
   })
 
-  function getCachedSkins() {
-    return qc.getQueryData<UserSkin[]>([SKINS_QUERY_KEY])
-  }
+  function _addOptimisticSkin(skin: UserSkin) {
+    const cachedSkins = _skins.data.value ?? []
+    const newSkins = [...cachedSkins, skin]
 
-  function addOptimisticSkin(skin: UserSkin) {
-    const cachedSkins = getCachedSkins()
-    qc.setQueryData([SKINS_QUERY_KEY], [...(cachedSkins ?? []), skin])
-  }
-
-  function triggerPendingSkin() {
-    if (!isAuthenticated.value) {
-      return localSkins.value.push({
-        base64: '',
-        headBase64: '',
-        id: 'pending',
-        name: 'Pending',
-        skinType: 'CLASSIC',
-        skinUrl: '',
-        source: 'FILE_UPLOAD',
-        thumbnailUrl: '',
-        userId: '',
-      })
-    }
-
-    return addOptimisticSkin({
-      base64: '',
-      headBase64: '',
-      id: crypto.randomUUID(),
-      name: 'Pending',
-      skinType: 'CLASSIC',
-      skinUrl: '',
-      source: 'FILE_UPLOAD',
-      thumbnailUrl: '',
-      userId: '',
-    })
-  }
-
-  function removePendingSkin() {
-    if (!isAuthenticated.value) {
-      return localSkins.value = localSkins.value.filter(skin => skin.id !== 'pending')
-    }
-
-    const cachedSkins = getCachedSkins()
-    qc.setQueryData([SKINS_QUERY_KEY], cachedSkins?.filter(skin => skin.id !== 'pending'))
+    _skins.data.value = newSkins
   }
 
   return {
     addSkin,
+    currentPendingSkin,
+    deleteSkin,
+    getSkins,
     isAddingSkin,
-    isLoadingSkins,
     isMigratingSkins,
     migrateLocalSkins,
-    skins,
   }
-}
-
-function onError(error: H3Error) {
-  useNuxtApp().$toast.error(error.statusMessage ?? 'An unknown error occurred')
 }
