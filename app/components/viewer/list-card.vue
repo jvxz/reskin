@@ -9,7 +9,7 @@ const { currentSkin } = useCurrentSkin()
 const { deleteSkin } = useSkins()
 const currentPendingSkin = useCurrentlyPending()
 
-const isPending = computed(() => currentPendingSkin.value === props.skin.id)
+const isPending = computed(() => currentPendingSkin.value === props.skin.id || !props.skin.userId)
 </script>
 
 <template>
@@ -19,7 +19,7 @@ const isPending = computed(() => currentPendingSkin.value === props.skin.id)
         :class="cn(
           buttonVariants({ variant: 'soft' }),
           staticStyles.variant.default,
-          'flex h-18 animate-in flex-row items-center justify-start gap-4 p-4 transition duration-150 fade-in-0 zoom-in-95 first:mt-px mt-3',
+          'mt-3 flex h-18 animate-in flex-row items-center justify-start gap-4 p-4 transition duration-150 fade-in-0 zoom-in-95 first:mt-px',
         )"
         @click="currentSkin = skin"
       >
@@ -37,11 +37,15 @@ const isPending = computed(() => currentPendingSkin.value === props.skin.id)
       </UCard>
     </UContextMenuTrigger>
     <UContextMenuContent>
-      <UContextMenuItem :disabled="isPending" @click="currentSkin = skin">
+      <UContextMenuItem @click="currentSkin = skin">
         <Icon name="tabler:box-model" />
         Apply
       </UContextMenuItem>
-      <UContextMenuItem :disabled="isPending" @click="deleteSkin({ isAuthed, skin })">
+      <UContextMenuItem
+        :disabled="isPending"
+        :class="isPending ? 'animate-pulse' : ''"
+        @click="deleteSkin({ isAuthed, skin })"
+      >
         <Icon name="tabler:trash" />
         Delete
       </UContextMenuItem>
@@ -53,7 +57,6 @@ const isPending = computed(() => currentPendingSkin.value === props.skin.id)
       </UContextMenuItem>
       <UContextMenuSeparator />
       <UContextMenuItem
-        v-if="skin.skinUrl"
         :disabled="isPending"
         @click="copy(skin.skinUrl)"
       >
