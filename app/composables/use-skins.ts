@@ -64,32 +64,32 @@ export function useSkins() {
           thumbnailBase64,
         },
         method: 'POST',
-        onResponse: () => {
-          _refreshSkins()
-          currentPendingSkin.value = null
-        },
       })
+    },
+    onSettled: () => {
+      _refreshSkins()
+      currentPendingSkin.value = null
     },
   })
 
-  async function deleteSkin(opts: {
-    isAuthed: boolean
-    skin: UserSkin
-  }) {
-    if (!opts.isAuthed) {
-      return localSkins.value = localSkins.value.filter(skin => skin.uuid !== opts.skin.uuid)
-    }
+  const { mutate: deleteSkin } = useMutation({
+    mutation: async (opts: {
+      isAuthed: boolean
+      skin: UserSkin
+    }) => {
+      if (!opts.isAuthed) {
+        return localSkins.value = localSkins.value.filter(skin => skin.uuid !== opts.skin.uuid)
+      }
 
-    _skins.data.value = _skins.data.value?.filter(skin => skin.id !== opts.skin.id)
+      _skins.data.value = _skins.data.value?.filter(skin => skin.id !== opts.skin.id)
 
-    await $get('/api/user/delete-skin', {
-      body: {
-        id: opts.skin.id,
-      },
-      method: 'POST',
-      onResponse: () => _refreshSkins(),
-    })
-  }
+      await $get('/api/user/delete-skin', {
+        body: opts.skin,
+        method: 'POST',
+      })
+    },
+    onSettled: () => _refreshSkins(),
+  })
 
   const { isLoading: isMigratingSkins, mutate: migrateLocalSkins } = useMutation({
     mutation: async () => {
