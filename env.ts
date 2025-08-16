@@ -7,9 +7,9 @@ export const env = createEnv({
     NUXT_PUBLIC_GITHUB_CLIENT_ID: z.string().min(1),
   },
   server: {
-    NUXT_BETTER_AUTH_SECRET: z.string().min(1),
-    NUXT_DATABASE_URL: z.url(),
-    NUXT_GITHUB_CLIENT_SECRET: z.string().min(1),
-    NUXT_UPLOADTHING_TOKEN: z.string().min(1),
+    BETTER_AUTH_SECRET: z.string().min(1),
+    DATABASE_URL: z.url(),
+    GITHUB_CLIENT_SECRET: z.string().min(1),
+    UPLOADTHING_TOKEN: z.string().min(1),
   },
 })
