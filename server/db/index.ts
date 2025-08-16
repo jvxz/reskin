@@ -1,12 +1,11 @@
 import { env } from '@@/env'
-import { drizzle } from 'drizzle-orm/postgres-js'
-import postgres from 'postgres'
+import { neon, neonConfig } from '@neondatabase/serverless'
+import { drizzle } from 'drizzle-orm/neon-http'
+import ws from 'ws'
 import * as schema from './schema'
 
-const connectionString = env.NUXT_DATABASE_URL
+neonConfig.webSocketConstructor = ws
 
-// Disable prefetch as it is not supported for "Transaction" pool mode
-const client = postgres(connectionString, { prepare: false })
-export const db = drizzle(client, {
-  schema,
-})
+const sql = neon(env.DATABASE_URL)
+
+export const db = drizzle({ client: sql, schema })
