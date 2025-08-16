@@ -16,6 +16,10 @@ export default defineNuxtConfig({
     },
   },
 
+  hub: {
+    database: true,
+  },
+
   imports: {
     dirs: [
       '~/server/utils',
@@ -36,6 +40,7 @@ export default defineNuxtConfig({
     'vue-sonner/nuxt',
     '@vueuse/nuxt',
     '@nuxt/icon',
+    '@nuxthub/core',
   ],
   vite: {
     plugins: [
