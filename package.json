@@ -12,6 +12,7 @@
   "dependencies": {
     "@antfu/eslint-config": "^5.1.0",
     "@compodium/nuxt": "0.1.0-beta.11",
+    "@neondatabase/serverless": "^1.0.1",
     "@nuxt/eslint": "1.7.1",
     "@nuxt/fonts": "0.11.4",
     "@nuxt/icon": "1.15.0",
@@ -51,10 +52,12 @@
     "vue": "^3.5.18",
     "vue-router": "^4.5.1",
     "vue-sonner": "^2.0.2",
+    "ws": "^8.18.3",
     "zod": "^4.0.15"
   },
   "devDependencies": {
     "@iconify-json/tabler": "^1.2.20",
+    "@types/ws": "^8.18.1",
     "eslint-plugin-better-tailwindcss": "^3.7.4",
     "eslint-plugin-format": "^1.0.1",
     "tsx": "^4.20.3",
