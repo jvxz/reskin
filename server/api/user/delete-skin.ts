@@ -13,7 +13,7 @@ export default defineAuthedEventHandler(async (event) => {
     })
   }
 
-  await event.context.db.delete(schema.skins).where(
+  await useDrizzle().delete(schema.skins).where(
     and(
       eq(schema.skins.id, skin.id),
       eq(schema.skins.userId, event.context.authData.user.id),

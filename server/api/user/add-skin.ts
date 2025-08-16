@@ -27,7 +27,7 @@ export default defineAuthedEventHandler(async (event) => {
     userId: event.context.authData.user.id,
   }
 
-  await event.context.db.insert(skins).values(skin)
+  await useDrizzle().insert(skins).values(skin)
 
   return skin
 })

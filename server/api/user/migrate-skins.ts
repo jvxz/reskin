@@ -48,5 +48,5 @@ export default defineAuthedEventHandler(async (event) => {
 
   const userSkins = await Promise.all(procedures)
 
-  await event.context.db.insert(schema.skins).values(userSkins)
+  await useDrizzle().insert(schema.skins).values(userSkins)
 })
